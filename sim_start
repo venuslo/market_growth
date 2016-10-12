@@ -1,0 +1,58 @@
+import matplotlib.pylab as py
+import math
+import numpy as np
+
+
+class scene:
+	def __init__(self, traits):
+		(eps, pstar, lambda, B) = traits
+		self.eps = eps
+
+		self.lambda = lambda
+		self.B = B
+		self.dict_oneShotDyn = {}
+		self.dict_oneShotRev = {}
+
+
+
+	def findOptPrice(self):
+		
+
+
+	def one_shot_dynamics(self, T, p0, gamma):
+		
+		dynamic = np.empty(T)
+		dynamic[0] = self.eps
+
+		dynamic[1] = growth(dynamic[0], p0, self.B, self.lambda)
+		
+		for i in range(2,T):
+			self.dynamic[i] = growth(self.dynamic[i-1], self.pstar, self.B, self.lambda)
+
+		self.dict_oneShotDyn[(T, p0)] = dynamic 
+		
+		profit = discounted_profit(gamma, dynamic)
+		
+		self.dict_oneShotRev[(T, p0, gamma)] = profit
+
+
+
+
+
+
+def growth(r, p, B, lambda):
+	r_next = math.exp(-lambda*1.0*(p-B)/r)
+	return r_next 
+
+
+
+def discounted_profit(gamma, profit):
+	t=len(profit)
+	total = 0.0
+	for i in range(0,t):
+		total = total + profit * gamma**i
+
+	return total
+
+
+
