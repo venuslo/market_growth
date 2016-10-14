@@ -46,7 +46,8 @@ class scene:
 		self.dict_oneShotDyn[(T, p0)] = dynamic 
 		
 		profit = [x*self.pStar for x in dynamic]
-		profit[0] = profit[0]*p0/self.pStar  #fix for error 
+		profit[0] = 0.0  #fix for error, because we only start counting from T=1
+		profit[1] = p0*dynamic[1] 
 		
 		self.dict_oneShotRev[(T, p0)] = profit
 		
@@ -100,8 +101,8 @@ def growth(r, p, B, lam):
 def discounted_profit(gamma, profit):
 	t=len(profit)
 	total = 0.0
-	for i in range(0,t):
-		total = total + profit[i] * gamma**i
+	for i in range(1,t):
+		total = total + profit[i] * gamma**(i-1)
 
 	return total
 
@@ -150,7 +151,7 @@ for i in range(0,15):
 	fig = py.figure()
 	py.xlabel("time")
 	py.ylabel("revenue")
-	py.axis([0,T,0,3])
+	py.axis([0,T,-5.5,3])
 	py.plot(xAxis, scene1.dict_oneShotRev[(T,p0)])
 	fig.savefig("Rev_p0_"+name+".png")
 	py.close(fig)
