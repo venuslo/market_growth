@@ -125,47 +125,46 @@ print scene1.pLow
 
 #================================================
 
-T=30
-gamma = 0.9
+for T in [15, 30]:
 
-step = 0.0002
-xAxis = [i for i in range(0,T)]
+	gamma = 0.9
 
-for i in range(0,15):
-	p0 = scene1.pLow - i*step
-	scene1.oneShotDynamic(T,p0,gamma)
-	#print p0
-	#print scene1.dict_profit[(T,p0)]
-	#print scene1.dict_oneShotDyn[(T, p0)]
+	step = 0.0002
+	xAxis = [i for i in range(0,T)]
+
+	for i in range(0,15):
+		p0 = scene1.pLow - i*step
+		scene1.oneShotDynamic(T,p0,gamma)
+		#print p0
+		#print scene1.dict_profit[(T,p0)]
+		#print scene1.dict_oneShotDyn[(T, p0)]
 	
-	name = str(p0*10000)[1:6]
+		name = str(p0*10000)[1:6]
+
+		fig = py.figure()
+		py.xlabel("time")
+		py.ylabel("participation")
+		py.axis([0,T,0,1])
+		py.plot(xAxis, scene1.dict_oneShotDyn[(T,p0)])
+		fig.savefig("Dynamic_p0_"+name+"_T_"+str(T)+".png")
+		py.close(fig)
+
+		fig = py.figure()
+		py.xlabel("time")
+		py.ylabel("revenue")
+		py.axis([0,T,-5.5,3])
+		py.plot(xAxis, scene1.dict_oneShotRev[(T,p0)])
+		fig.savefig("Rev_p0_"+name+"_T_"+str(T)+".png")
+		py.close(fig)
+
+	x_p0 = [x[1] for x in scene1.dict_profit]
+	x_p0.sort()
+	y_profit = [scene1.dict_profit[(T,i)] for i in x_p0]
 
 	fig = py.figure()
-	py.xlabel("time")
-	py.ylabel("participation")
-	py.axis([0,T,0,1])
-	py.plot(xAxis, scene1.dict_oneShotDyn[(T,p0)])
-	fig.savefig("Dynamic_p0_"+name+".png")
+	py.xlabel("initialPrice")
+	py.ylabel("discounted profit")
+	py.axis([-5.002, -4.997,0,7])
+	py.plot(x_p0,y_profit)
+	fig.savefig("changeDisPro"+str(gamma)+"_T_"+str(T)+".png")
 	py.close(fig)
-
-	fig = py.figure()
-	py.xlabel("time")
-	py.ylabel("revenue")
-	py.axis([0,T,-5.5,3])
-	py.plot(xAxis, scene1.dict_oneShotRev[(T,p0)])
-	fig.savefig("Rev_p0_"+name+".png")
-	py.close(fig)
-
-x_p0 = []
-y_profit = []
-for x in scene1.dict_profit:
-	x_p0 = x_p0 + [x[1]]
-	y_profit = y_profit + [scene1.dict_profit[x]]
-
-fig = py.figure()
-py.xlabel("initialPrice")
-py.ylabel("discounted profit")
-py.axis([-5.02, -4.98,-1,8])
-py.plot(x_p0,y_profit)
-fig.savefig("changeDisPro"+str(gamma)+".png")
-py.close(fig)
