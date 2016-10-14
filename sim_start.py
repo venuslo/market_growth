@@ -136,21 +136,23 @@ for i in range(0,15):
 	print p0
 	print scene1.dict_profit[(T,p0)]
 	print scene1.dict_oneShotDyn[(T, p0)]
+	
+	name = str(p0*10000)[1:6]
 
 	fig = py.figure()
 	py.xlabel("time")
 	py.ylabel("participation")
 	py.axis([0,T,0,1])
 	py.plot(xAxis, scene1.dict_oneShotDyn[(T,p0)])
-	fig.savefig("Dynamic_p0_"+str(p0)+".png")
+	fig.savefig("Dynamic_p0_"+name+".png")
 	py.close(fig)
 
 	fig = py.figure()
 	py.xlabel("time")
 	py.ylabel("revenue")
-	py.axis([0,T,0,10])
+	py.axis([0,T,0,3])
 	py.plot(xAxis, scene1.dict_oneShotRev[(T,p0)])
-	fig.savefig("Rev_p0_"+str(p0)+".png")
+	fig.savefig("Rev_p0_"+name+".png")
 	py.close(fig)
 
 
