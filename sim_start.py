@@ -124,12 +124,15 @@ print scene1.pLow
 
 #================================================
 
-T=100
-gamma = 0.99
+T=10
+gamma = 0.9
 
-step = abs(scene1.pLow)/20
+step = 0.01
 
 for i in range(0,20):
 	p0 = scene1.pLow - i*step
 	scene1.oneShotDynamic(T,p0,gamma)
 	print scene1.dict_profit[(T,p0)]
+
+print scene1.dict_oneShotDyn[(T,scene1.pLow)]
+print scene1.dict_oneShotRev[(T,scene1.pLow)]
