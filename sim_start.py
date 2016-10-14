@@ -124,15 +124,33 @@ print scene1.pLow
 
 #================================================
 
-T=10
+T=30
 gamma = 0.9
 
-step = 0.01
+step = 0.0002
+xAxis = [i for i in range(0,T)]
 
-for i in range(0,20):
+for i in range(0,15):
 	p0 = scene1.pLow - i*step
 	scene1.oneShotDynamic(T,p0,gamma)
+	print p0
 	print scene1.dict_profit[(T,p0)]
+	print scene1.dict_oneShotDyn[(T, p0)]
 
-print scene1.dict_oneShotDyn[(T,scene1.pLow)]
-print scene1.dict_oneShotRev[(T,scene1.pLow)]
+	fig = py.figure()
+	py.xlabel("time")
+	py.ylabel("participation")
+	py.axis([0,T,0,1])
+	py.plot(xAxis, scene1.dict_oneShotDyn[(T,p0)])
+	fig.savefig("Dynamic_p0_"+str(p0)+".png")
+	py.close(fig)
+
+	fig = py.figure()
+	py.xlabel("time")
+	py.ylabel("revenue")
+	py.axis([0,T,0,10])
+	py.plot(xAxis, scene1.dict_oneShotRev[(T,p0)])
+	fig.savefig("Rev_p0_"+str(p0)+".png")
+	py.close(fig)
+
+
