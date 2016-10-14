@@ -134,9 +134,9 @@ xAxis = [i for i in range(0,T)]
 for i in range(0,15):
 	p0 = scene1.pLow - i*step
 	scene1.oneShotDynamic(T,p0,gamma)
-	print p0
-	print scene1.dict_profit[(T,p0)]
-	print scene1.dict_oneShotDyn[(T, p0)]
+	#print p0
+	#print scene1.dict_profit[(T,p0)]
+	#print scene1.dict_oneShotDyn[(T, p0)]
 	
 	name = str(p0*10000)[1:6]
 
@@ -156,4 +156,16 @@ for i in range(0,15):
 	fig.savefig("Rev_p0_"+name+".png")
 	py.close(fig)
 
+x_p0 = []
+y_profit = []
+for x in scene1.dict_profit:
+	x_p0 = x_p0 + [x[1]]
+	y_profit = y_profit + [scene1.dict_profit[x]]
 
+fig = py.figure()
+py.xlabel("initialPrice")
+py.ylabel("discounted profit")
+py.axis([-5.02, -4.98,-1,8])
+py.plot(x_p0,y_profit)
+fig.savefig("changeDisPro"+str(gamma)+".png")
+py.close(fig)
