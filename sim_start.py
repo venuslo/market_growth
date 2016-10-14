@@ -12,7 +12,7 @@ class scene:
 
 		self.dict_oneShotDyn = {}
 		self.dict_oneShotRev = {}
-
+		self.dict_profit = {}
 
 
 	def findOptPrice(self):
@@ -33,15 +33,15 @@ class scene:
 		self.rCrit = binarySearch(-1, l, u, goal, lambda x: x*math.log(x)) 
 					
 
-	def one_shot_dynamics(self, T, p0, gamma):
+	def oneShotDynamic(self, T, p0, gamma):
 		
 		dynamic = np.empty(T)
-		dynamic[0] = self.ps
+		dynamic[0] = self.eps
 
 		dynamic[1] = growth(dynamic[0], p0, self.B, self.lam)
 		
 		for i in range(2,T):
-			self.dynamic[i] = growth(self.dynamic[i-1], self.pStar, self.B, self.lam)
+			dynamic[i] = growth(dynamic[i-1], self.pStar, self.B, self.lam)
 
 		self.dict_oneShotDyn[(T, p0)] = dynamic 
 		
@@ -49,6 +49,10 @@ class scene:
 		profit[0] = profit[0]*p0/self.pStar  #fix for error 
 		
 		self.dict_oneShotRev[(T, p0)] = profit
+		
+		self.dict_profit[(T, p0)] = discounted_profit(gamma, profit)
+		
+
 
 	#go from eps to rCrit
 	def find_pLow(self):
@@ -89,7 +93,7 @@ def binarySearch(d, l, u, goal,f):
 
 def growth(r, p, B, lam):
 	r_next = math.exp(-lam*1.0*(p-B)/r)
-	return r_next 
+	return min(1.0, r_next)
 
 
 
@@ -97,7 +101,7 @@ def discounted_profit(gamma, profit):
 	t=len(profit)
 	total = 0.0
 	for i in range(0,t):
-		total = total + profit * gamma**i
+		total = total + profit[i] * gamma**i
 
 	return total
 
@@ -117,3 +121,15 @@ print scene1.pStar
 print scene1.rStar
 print scene1.rCrit
 print scene1.pLow
+
+#================================================
+
+T=100
+gamma = 0.99
+
+step = abs(scene1.pLow)/20
+
+for i in range(0,20):
+	p0 = scene1.pLow - i*step
+	scene1.oneShotDynamic(T,p0,gamma)
+	print scene1.dict_profit[(T,p0)]
