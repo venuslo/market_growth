@@ -127,7 +127,6 @@ def discounted_profit(gamma, profit):
 trait = (0.0001, 1.0/20,-5.0)
 scene1 = scene(trait)
 
-print scene1.lam
 
 scene1.findOptPrice()
 scene1.find_pLow()
@@ -248,3 +247,192 @@ for T in [15, 30]:
 	fig.savefig("Scene2_changeDisPro"+str(gamma)+"_T_"+str(T)+".png")
 	py.close(fig)
 
+
+
+
+
+#======================================================
+
+#trait = eps, lambda, B
+
+trait = (0.0001, 1.0/10.0,-3.0)
+scene3 = scene(trait)
+
+
+scene3.findOptPrice()
+scene3.find_pLow()
+print "scene3 pStar"+str(scene3.pStar)
+print "scene3 rStar" + str(scene3.rStar)
+print "scene3 rCrit" + str(scene3.rCrit)
+print "scene3 pLow" + str(scene3.pLow)
+
+#================================================
+
+for T in [15, 30]:
+
+	gamma = 0.9
+
+	step = (scene3.pLow-scene3.B)/15
+	xAxis = [i for i in range(0,T)]
+
+	for i in range(0,15):
+		p0 = scene3.pLow - i*step
+		scene3.oneShotDynamic(T,p0,gamma)
+		#print p0
+		#print scene1.dict_profit[(T,p0)]
+		#print scene1.dict_oneShotDyn[(T, p0)]
+	
+		name = str(p0*10000)[1:6]
+
+		fig = py.figure()
+		py.xlabel("time")
+		py.ylabel("participation")
+		py.axis([0,T,0,1])
+		py.plot(xAxis, scene3.dict_oneShotDyn[(T,p0)])
+		fig.savefig("Scene3_Dynamic_p0_"+name+"_T_"+str(T)+".png")
+		py.close(fig)
+
+		fig = py.figure()
+		py.xlabel("time")
+		py.ylabel("revenue")
+		py.axis([0,T,-2,0.5])
+		py.plot(xAxis, scene3.dict_oneShotRev[(T,p0)])
+		fig.savefig("Scene3_Rev_p0_"+name+"_T_"+str(T)+".png")
+		py.close(fig)
+
+	x_p0 = [x[1] for x in scene3.dict_profit]
+	x_p0.sort()
+	y_profit = [scene3.dict_profit[(T,i)] for i in x_p0]
+
+	fig = py.figure()
+	py.xlabel("initialPrice")
+	py.ylabel("discounted profit")
+	py.axis([scene3.B, scene3.pLow ,-1,3])
+	py.plot(x_p0,y_profit)
+	fig.savefig("Scene3_changeDisPro"+str(gamma)+"_T_"+str(T)+".png")
+	py.close(fig)
+
+
+
+
+
+
+
+
+#======================================================
+
+#trait = eps, lambda, B
+
+trait = (0.0001, 1.0/10,-1.0)
+scene4 = scene(trait)
+
+
+scene4.findOptPrice()
+scene4.find_pLow()
+print "scene4 pStar"+str(scene4.pStar)
+print "scene4 rStar" + str(scene4.rStar)
+print "scene4 rCrit" + str(scene4.rCrit)
+print "scene4 pLow" + str(scene4.pLow)
+
+#================================================
+
+for T in [15, 30]:
+
+	gamma = 0.9
+
+	step = (scene4.pLow-scene4.B)/15
+	xAxis = [i for i in range(0,T)]
+
+	for i in range(0,15):
+		p0 = scene4.pLow - i*step
+		scene4.oneShotDynamic(T,p0,gamma)
+		#print p0
+		#print scene1.dict_profit[(T,p0)]
+		#print scene1.dict_oneShotDyn[(T, p0)]
+	
+		name = str(p0*10000)[1:6]
+
+		fig = py.figure()
+		py.xlabel("time")
+		py.ylabel("participation")
+		py.axis([0,T,0,1])
+		py.plot(xAxis, scene4.dict_oneShotDyn[(T,p0)])
+		fig.savefig("Scene4_Dynamic_p0_"+name+"_T_"+str(T)+".png")
+		py.close(fig)
+
+		fig = py.figure()
+		py.xlabel("time")
+		py.ylabel("revenue")
+		py.axis([0,T,-1.0,2])
+		py.plot(xAxis, scene4.dict_oneShotRev[(T,p0)])
+		fig.savefig("Scene4_Rev_p0_"+name+"_T_"+str(T)+".png")
+		py.close(fig)
+
+	x_p0 = [x[1] for x in scene4.dict_profit]
+	x_p0.sort()
+	y_profit = [scene4.dict_profit[(T,i)] for i in x_p0]
+
+	fig = py.figure()
+	py.xlabel("initialPrice")
+	py.ylabel("discounted profit")
+	py.axis([scene4.B, scene4.pLow,2,12])
+	py.plot(x_p0,y_profit)
+	fig.savefig("Scene4_changeDisPro"+str(gamma)+"_T_"+str(T)+".png")
+	py.close(fig)
+
+	print "gamma 0.9"
+	print y_profit
+
+
+#scene 4 with a lower gamma
+for T in [15, 30]:
+
+	gamma = 0.8
+
+
+	x_p0 = [x[1] for x in filter(lambda x: x[0]==T, scene4.dict_oneShotRev)]
+	x_p0.sort()
+	
+	y_profit = [discounted_profit(gamma, scene4.dict_oneShotRev[(T, i)]) for i in x_p0]
+
+	fig = py.figure()
+	py.xlabel("initialPrice")
+	py.ylabel("discounted profit")
+	py.axis([scene4.B, scene4.pLow,0,5])
+	py.plot(x_p0,y_profit)
+	fig.savefig("Scene4_changeDisPro"+str(gamma)+"_T_"+str(T)+".png")
+	py.close(fig)
+
+	print "gamma 0.8"
+	print y_profit
+
+
+#scene 4 with a lower gamma
+for T in [15, 30]:
+
+	gamma = 0.7
+
+
+	x_p0 = [x[1] for x in filter(lambda x: x[0]==T, scene4.dict_oneShotRev)]
+	x_p0.sort()
+	
+	y_profit = [discounted_profit(gamma, scene4.dict_oneShotRev[(T, i)]) for i in x_p0]
+
+	fig = py.figure()
+	py.xlabel("initialPrice")
+	py.ylabel("discounted profit")
+	py.axis([scene4.B, scene4.pLow,-1,5])
+	py.plot(x_p0,y_profit)
+	fig.savefig("Scene4_changeDisPro"+str(gamma)+"_T_"+str(T)+".png")
+	py.close(fig)
+
+
+	print "gamma 0.7"
+	print y_profit
+#def discounted_profit(gamma, profit):
+#	t=len(profit)
+#	total = 0.0
+#	for i in range(1,t):
+#		total = total + profit[i] * gamma**(i-1)
+#
+#	return total
