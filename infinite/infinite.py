@@ -11,6 +11,7 @@ class Scene:
 		self.lamB = self.lam*self.B
 
 #compute the max of this period based on a grid
+#returns vector
 def Vr(r, X, vNext, scene):
 	values = [(X[j]/scene.lam)*(scene.lamB - r*math.log(X[j])) \
 			+ scene.alpha *vNext[j] for j in range(0,N)]
@@ -25,9 +26,11 @@ def VInf(X, scene):
 def maintain(x, scene):
 	return (x/scene.lam)*(scene.lamB - x*math.log(x)) * 1.0/(1-scene.alpha)
 
+#inpute:  vector, vector, obj
+#return: vector of tuples
 def VNow(X, vNext, scene):
 	Y = [Vr(r, X, vNext, scene) for r in X]
-	vNow = [max(y) for y in Y]
+	vNow = [maximum(X,y) for y in Y] #returns the rate and value
 	return vNow
 
 
@@ -42,6 +45,41 @@ def plot(X, Y, name, axes):
 		py.plot(X, Y[t])
 		fig.savefig(name+str(T-t))
 		py.close(fig) 
+
+
+
+def minimum(X,Y):
+	minX = X[0]
+	minY = Y[0]
+
+	for i in range(0, len(X)):
+		if Y[i] < minY:
+			minX = X[i]
+			minY = Y[i]
+
+	return (minX, minY)
+
+def maximum(X,Y):
+	maxX = X[0]
+	maxY = Y[0]
+
+	for i in range(0,len(X)): 
+		if Y[i]> maxY:
+			maxX = X[i]
+			maxY = Y[i]
+
+	return (maxX, maxY)
+
+
+#input:  X a vector, Z a matrix
+def writeToFile(X,Z):
+	f = open('path.txt', 'w')
+	for i in range(0,N):
+		f.write(str(X[i])+",")
+		for t in range(0,T-1):
+			f.write(str(Z[t][i][0]) + ",")
+		f.write("\n")
+	f.close()
 
 
 #=======================================================
@@ -59,22 +97,34 @@ T = 5
 
 #Plot V
 V=[]
+Z=[]
 for t in range(0,T):
-	if t ==0:
-		V.append(VInf(X, scene1))
+	if t ==0:	
+		y=VInf(X, scene1)
+		V.append(y)
+		
+		maxR = maximum(X,y)
+		print trait, maxR
 
 	else:
-		y = VNow(X, V[t-1], scene1)
+		z = VNow(X, V[t-1], scene1)
+		Z.append(z)
+		y = [x[1] for x in z]
 		V.append(y)
 
 
 plot(X,V, "Scene1_V_T", [0,1,-0.2, 1.5])
 
+writeToFile(X,Z)
 
 #plot L
 L = []
 for t in range(0,T):
 	y=[V[t][j] - maintain(X[j], scene1) for j in range(0,N)]
 	L.append(y)
+
+	if t !=0:
+		minR = minimum(X,y)
+		print trait, t, minR
 
 plot(X,L,"Scene1_L_T", [0,1, -0.2, 5.0])
