@@ -72,8 +72,8 @@ def maximum(X,Y):
 
 
 #input:  X a vector, Z a matrix
-def writeToFile(X,Z):
-	f = open('path.txt', 'w')
+def writeToFile(X,Z, name):
+	f = open(name+'path.txt', 'w')
 	for i in range(0,N):
 		f.write(str(X[i])+",")
 		for t in range(0,T-1):
@@ -115,7 +115,7 @@ for t in range(0,T):
 
 plot(X,V, "Scene1_V_T", [0,1,-0.2, 1.5])
 
-writeToFile(X,Z)
+writeToFile(X,Z,"Scene1")
 
 #plot L
 L = []
