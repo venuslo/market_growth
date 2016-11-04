@@ -3,12 +3,29 @@ import matplotlib.pylab as py
 import numpy as np
 
 class Scene:
-	def __init__(self, traits):
-		(lam, B, alpha) = traits
+	def __init__(self, ID, traits):
+		(lam, B, alpha, t) = traits
+		self.ID = ID
 		self.lam = lam*1.0
 		self.B = B*1.0
 		self.alpha = alpha*1.0
 		self.lamB = self.lam*self.B
+		self.trueT = t #the number of periods I have control over
+
+	def setDPTable(self, DPTable):
+		#structure of DPTable:
+		#DPT[t][i] =(x,y) means at time trueT-t, given rate (i+1)/N, 
+		#we should go to rate x for rev y
+		self.DPTable = DPTable
+		
+		#since I have the DPTable, might as well initialize a path dictionary
+		self.pathDict={}
+
+	def setVTable(self, V):
+		self.V = V
+
+	def setLTable(self, L):
+		self.L = L
 
 #compute the max of this period based on a grid
 #returns vector
@@ -82,49 +99,124 @@ def writeToFile(X,Z, name):
 	f.close()
 
 
+#analyze scene, do plots, etc
+def analyzeScene(scene):
+	#Plot V
+	V=[]
+	DPTable=[]
+
+	#structure of DPTable:
+	#DPT[t][i] =(x,y) means at time trueT-t, given rate (i+1)/N, we should go to rate x for rev y
+	for t in range(0,T):
+		if t ==0:	
+			y=VInf(X, scene)
+			V.append(y)
+		
+	#		maxR = maximum(X,y)
+	#		print trait, maxR
+
+		else:
+			z = VNow(X, V[t-1], scene)
+			DPTable.append(z)
+			y = [x[1] for x in z]
+			V.append(y)
+
+
+	plot(X,V, "Scene"+str(scene.ID)+"_V_T", [0,1,-0.2, 5])
+
+	#writeToFile(X,DPTable,"Scene"+str(scene.ID))
+
+	#plot L
+	L = []
+	for t in range(0,T):
+		y=[V[t][j] - maintain(X[j], scene) for j in range(0,N)]
+		L.append(y)
+
+	#	if t !=0:
+	#		minR = minimum(X,y)
+		#	print trait, t, minR
+
+	plot(X,L,"Scene"+str(scene.ID)+"_L_T", [0,1, -0.2, 5.0])
+
+	scene.setDPTable(DPTable)
+	scene.setVTable(V)
+	scene.setLTable(L)
+
+#make sure start is on the grid?
+def extractPath(scene, start):
+	p=[start]
+	index = int(start*N-1)
+
+	for i in range(T-2, -1, -1):
+		nextRate = scene.DPTable[i][index][0]
+		p.append(nextRate)
+		index = int(nextRate*N-1)
+	return p
+	
+
+
+#plot the paths for a bunch of different starters onto the same graph
+def plotPath(scene):
+	fig = py.figure()
+	py.title("Scene"+str(scene.ID)+" path")
+	py.xlabel("time")
+	py.ylabel("rate")
+	for x in scene.pathDict:
+		py.plot(scene.pathDict[x], label = str(x))
+ 	py.axis([0,10,0,1])	
+	fig.savefig("Scene"+str(scene.ID)+"_path")
+	py.close(fig) 
+
+
 #=======================================================
 #grid size; will use r =1/N, 2/N, ..., 1
-N=100
-
+N=2000
 X = [(i+1.0)/N for i in range(0,N)] 
 
+
+#define a set of "starter" rates that we will consider
+starter = [0.001, 0.01, 0.1, 0.2, 0.3,  0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+#####################################################3
+#define scenes
+sceneDict={}
+
 #traits(lam, B, alpha)
-trait = (1.0, -1/4.0, 0.95)
-scene1 = Scene(trait)
+trait = (0.5, -1/3.0, 0.95, 20)
+sceneDict[1] = Scene(1, trait)
 
-#number of time periods to go back
-T = 5
+trait = (0.5, -1/3.0, 0.9, 20)
+sceneDict[2] = Scene(2, trait)
 
-#Plot V
-V=[]
-Z=[]
-for t in range(0,T):
-	if t ==0:	
-		y=VInf(X, scene1)
-		V.append(y)
-		
-		maxR = maximum(X,y)
-		print trait, maxR
+trait = (0.5, -1/3.0, 0.85, 20)
+sceneDict[3] = Scene(3, trait)
 
-	else:
-		z = VNow(X, V[t-1], scene1)
-		Z.append(z)
-		y = [x[1] for x in z]
-		V.append(y)
+trait = (0.5, -1/3.0, 0.95, 3)
+sceneDict[4] = Scene(4, trait)
+
+trait = (0.5, -1/3.0, 0.95, 2)
+sceneDict[5] = Scene(5, trait)
+
+trait = (0.5, -1/3.0, 0.95, 1)
+sceneDict[6] = Scene(6, trait)
+
+trait = (1.0, -1/4.0, 0.95, 20)
+sceneDict[20] = Scene(20, trait)
 
 
-plot(X,V, "Scene1_V_T", [0,1,-0.2, 1.5])
 
-writeToFile(X,Z,"Scene1")
+###########################################
 
-#plot L
-L = []
-for t in range(0,T):
-	y=[V[t][j] - maintain(X[j], scene1) for j in range(0,N)]
-	L.append(y)
+for i in sceneDict:
+	myScene = sceneDict[i]
+	T = myScene.trueT+1
+	analyzeScene(myScene)
+	for x in starter:
+		path = extractPath(myScene, x)
+		myScene.pathDict[x] = path
+	
+	plotPath(myScene)
 
-	if t !=0:
-		minR = minimum(X,y)
-		print trait, t, minR
-
-plot(X,L,"Scene1_L_T", [0,1, -0.2, 5.0])
+	
+#myScene = sceneDict[20]
+#analyzeScene(myScene)
+#print extractPath(myScene, 0.001)
