@@ -27,6 +27,16 @@ class Scene:
 	def setLTable(self, L):
 		self.L = L
 
+
+	def setOptAndCrit(self, rStar, pStar, rCrit):
+		self.rStar = rStar
+		self.pStar = pStar
+		self.rCrit = rCrit #the critical point for price pStar
+
+
+######################################
+##functions for computing opt paths if given infinite horizon, control over T horizons
+
 #compute the max of this period based on a grid
 #returns vector
 def Vr(r, X, vNext, scene):
@@ -50,6 +60,92 @@ def VNow(X, vNext, scene):
 	vNow = [maximum(X,y) for y in Y] #returns the rate and value
 	return vNow
 
+
+#################################33
+#To compare one time to change vs two perdiods to change
+
+#a binary searcher
+#d= 1 means increasing function
+#d= -1 means decreasing function
+def binarySearch(d, l, u, goal, f):
+	if d==1:
+		while u-l >0.0000001:
+			m = (l+u)/2.0
+			val = f(m)
+
+			if val > goal:
+				u = m
+			else:
+				l=m
+
+	else:
+		while u-l > 0.0000001:
+			m = (l+u)/2.0
+			val = f(m)
+
+			if val < goal:
+				u = m
+			else:
+				l=m
+
+	return (l+u)/2.0
+
+#Find opt equil
+#input:  x, a scene
+def findOptPrice(x):
+	l =math.exp(-1)
+	u = 1.0
+
+	rStar = binarySearch(1, l, u, x.lamB, lambda x: 2*x*math.log(x) + x)
+	pStar = rStar/(2*x.lam) + x.B/2.0
+
+	#since we are here, let's find the critical point for price pStar
+	l= 0.0
+	u = math.exp(-1.0)
+	goal = -x.lam*(pStar - x.B)
+	rCrit = binarySearch(-1, l, u, goal, lambda x: x*math.log(x))
+
+	x.setOptAndCrit(rStar, pStar, rCrit)
+ 
+
+
+#find opt at t=1 given t=0 and t=2
+def optTwo(r, z, x):
+
+	opt = math.exp((x.lamB - x.alpha*z*math.log(z))/r - 1.0)
+
+	return opt
+
+#find the revenue for a time period given the current rate, the future rate, and x
+def rev(rNow, rNext, x):
+	return rNext/x.lam * (x.lamB - rNow*math.log(rNext))
+
+
+#given one scene and a starting point, we want to get to opt. 
+# What is the diff between taking jumping there in one step and in two step
+def compareOneTwo(r, x):
+	findOptPrice(x)
+	
+	#for one time period
+	revOne_1 = rev(r, x.rStar, x)  
+	revOne_2 = rev(x.rStar, x.rStar, x)
+	revOne = revOne_1 + x.alpha* revOne_2
+
+	#Let y be the middle position
+	y = optTwo(r, x.rStar, x)
+
+	#for two time periods
+	revTwo_1 = rev(r, y, x)
+	revTwo_2 = rev(y, x.rStar, x)
+	revTwo = revTwo_1 + revTwo_2
+
+	return revOne/revTwo 
+ 
+
+
+
+
+###############################################
 
 def plot(X, Y, name, axes):
 	for t in range(0,T):
@@ -180,27 +276,27 @@ starter = [0.001, 0.01, 0.1, 0.2, 0.3,  0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 #define scenes
 sceneDict={}
 
-#traits(lam, B, alpha)
+#traits(lam, B, alpha, T)
 trait = (0.5, -1/3.0, 0.95, 20)
-sceneDict[1] = Scene(1, trait)
+#sceneDict[1] = Scene(1, trait)
 
 trait = (0.5, -1/3.0, 0.9, 20)
-sceneDict[2] = Scene(2, trait)
+#sceneDict[2] = Scene(2, trait)
 
 trait = (0.5, -1/3.0, 0.85, 20)
-sceneDict[3] = Scene(3, trait)
+#sceneDict[3] = Scene(3, trait)
 
 trait = (0.5, -1/3.0, 0.95, 3)
-sceneDict[4] = Scene(4, trait)
+#sceneDict[4] = Scene(4, trait)
 
 trait = (0.5, -1/3.0, 0.95, 2)
-sceneDict[5] = Scene(5, trait)
+#sceneDict[5] = Scene(5, trait)
 
 trait = (0.5, -1/3.0, 0.95, 1)
 sceneDict[6] = Scene(6, trait)
 
 trait = (1.0, -1/4.0, 0.95, 20)
-sceneDict[20] = Scene(20, trait)
+#sceneDict[20] = Scene(20, trait)
 
 
 
