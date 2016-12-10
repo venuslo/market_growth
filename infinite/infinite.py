@@ -113,6 +113,7 @@ def findOptPrice(x):
 def optTwo(r, z, x):
 
 	opt = math.exp((x.lamB - x.alpha*z*math.log(z))/r - 1.0)
+	opt = min(1.0, opt)
 
 	return opt
 
@@ -152,8 +153,8 @@ def plot(X, Y, name, axes):
 		
 		fig = py.figure()
 		py.title(name + str(T-t))
-		py.xlabel("given rate")
-		py.ylabel("discounted profit")
+		#py.xlabel("given rate")
+		#py.ylabel("discounted profit")
 		py.axis(axes)
 		py.plot(X, Y[t])
 		fig.savefig(name+str(T-t))
@@ -293,24 +294,43 @@ trait = (0.5, -1/3.0, 0.95, 2)
 #sceneDict[5] = Scene(5, trait)
 
 trait = (0.5, -1/3.0, 0.95, 1)
-sceneDict[6] = Scene(6, trait)
+#sceneDict[6] = Scene(6, trait)
 
 trait = (1.0, -1/4.0, 0.95, 20)
 #sceneDict[20] = Scene(20, trait)
 
 
+trait = (0.5, -1/3.0, 1.0, 1)
+sceneDict[7] = Scene(7, trait)
 
 ###########################################
 
-for i in sceneDict:
-	myScene = sceneDict[i]
-	T = myScene.trueT+1
-	analyzeScene(myScene)
-	for x in starter:
-		path = extractPath(myScene, x)
-		myScene.pathDict[x] = path
+print "Plot path?"
+y = raw_input()
+if y == "y":
+	for i in sceneDict:
+		myScene = sceneDict[i]
+		T = myScene.trueT+1
+		analyzeScene(myScene)
+		for x in starter:
+			path = extractPath(myScene, x)
+			myScene.pathDict[x] = path
 	
-	plotPath(myScene)
+		plotPath(myScene)
+
+
+print "compare revOne and revTwo?"
+y = raw_input()
+if y =="y":
+	for i in sceneDict:
+		myScene = sceneDict[i]
+		T = 1	
+		R = [rate/100.0 for rate in range(1, 101)]
+		Y = [[compareOneTwo(r, myScene) for r in R]]
+		
+		rStar = str(int(round(myScene.rStar, 2)*100))
+		plot(R, Y, "CompareRevOneRevTwo"+rStar, [0, 1.0, 0, 1.0])
+	
 
 	
 #myScene = sceneDict[20]
