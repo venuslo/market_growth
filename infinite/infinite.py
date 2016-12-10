@@ -303,6 +303,8 @@ trait = (1.0, -1/4.0, 0.95, 20)
 trait = (0.5, -1/3.0, 1.0, 1)
 sceneDict[7] = Scene(7, trait)
 
+trait = (0.25, -1/1.0, 1.0, 1)
+sceneDict[8] = Scene(8, trait)
 ###########################################
 
 print "Plot path?"
@@ -328,8 +330,11 @@ if y =="y":
 		R = [rate/100.0 for rate in range(1, 101)]
 		Y = [[compareOneTwo(r, myScene) for r in R]]
 		
+		if i ==8:
+			print Y
+
 		rStar = str(int(round(myScene.rStar, 2)*100))
-		plot(R, Y, "CompareRevOneRevTwo"+rStar, [0, 1.0, 0, 1.0])
+		plot(R, Y, "CompareRevOneRevTwo"+rStar+"Scene"+str(i)+"_", [0, 1.0, 0, 1.0])
 	
 
 	
