@@ -130,8 +130,8 @@ def compareOneTwo(r, x):
 	#for one time period
 	revOne_1 = rev(r, x.rStar, x)  
 	revOne_2 = rev(x.rStar, x.rStar, x)
-	revOne = revOne_1 + x.alpha* revOne_2
-
+	#revOne = revOne_1 + x.alpha* revOne_2
+	revOne = revOne_1 + revOne_2
 	#Let y be the middle position
 	y = optTwo(r, x.rStar, x)
 
@@ -140,8 +140,18 @@ def compareOneTwo(r, x):
 	revTwo_2 = rev(y, x.rStar, x)
 	revTwo = revTwo_1 + revTwo_2
 
-	return revOne/revTwo 
- 
+
+	if revOne <0 and revTwo >=0:
+		return 0.0
+
+	elif revOne <0 and revTwo <0:
+		return revTwo/revOne
+
+	else:
+		return revOne/revTwo 
+ 			
+		#just to return revTwo
+	#	return revTwo
 
 
 
@@ -296,8 +306,8 @@ trait = (0.5, -1/3.0, 0.95, 2)
 trait = (0.5, -1/3.0, 0.95, 1)
 #sceneDict[6] = Scene(6, trait)
 
-trait = (1.0, -1/4.0, 0.95, 20)
-#sceneDict[20] = Scene(20, trait)
+trait = (1.0, -1/4.0, 1.0, 1)
+sceneDict[20] = Scene(20, trait)
 
 
 trait = (0.5, -1/3.0, 1.0, 1)
@@ -336,6 +346,7 @@ if y =="y":
 		rStar = str(int(round(myScene.rStar, 2)*100))
 		plot(R, Y, "CompareRevOneRevTwo"+rStar+"Scene"+str(i)+"_", [0, 1.0, 0, 1.0])
 	
+	#	plot(R, Y, "CompareRevOneRevTwo"+rStar+"Scene"+str(i)+"_", [0, 1.0, -0.5, 1.0])
 
 	
 #myScene = sceneDict[20]
