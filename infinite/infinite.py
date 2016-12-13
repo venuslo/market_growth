@@ -313,6 +313,12 @@ sceneDict[20] = Scene(20, trait)
 trait = (0.5, -1/3.0, 1.0, 1)
 sceneDict[7] = Scene(7, trait)
 
+trait = (0.5, -1/1.0, 1.0, 1)
+sceneDict[9] = Scene(9, trait)
+
+trait = (0.5, -1/10.0, 1.0, 1)
+sceneDict[19] = Scene(19, trait)
+
 trait = (0.25, -1/1.0, 1.0, 1)
 sceneDict[8] = Scene(8, trait)
 ###########################################
