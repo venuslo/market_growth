@@ -141,11 +141,13 @@ def compareOneTwo(r, x):
 	revTwo = revTwo_1 + revTwo_2
 
 
-	if revOne <0 and revTwo >=0:
+	if revOne <0:
 		return 0.0
+#	if revOne <0 and revTwo >=0:
+#		return 0.0
 
-	elif revOne <0 and revTwo <0:
-		return revTwo/revOne
+#	elif revOne <0 and revTwo <0:
+#		return revTwo/revOne
 
 	else:
 		return revOne/revTwo 
@@ -295,7 +297,7 @@ trait = (0.5, -1/3.0, 0.9, 20)
 #sceneDict[2] = Scene(2, trait)
 
 trait = (0.5, -1/3.0, 0.85, 20)
-#sceneDict[3] = Scene(3, trait)
+sceneDict[3] = Scene(3, trait)
 
 trait = (0.5, -1/3.0, 0.95, 3)
 #sceneDict[4] = Scene(4, trait)
@@ -304,7 +306,7 @@ trait = (0.5, -1/3.0, 0.95, 2)
 #sceneDict[5] = Scene(5, trait)
 
 trait = (0.5, -1/3.0, 0.95, 1)
-#sceneDict[6] = Scene(6, trait)
+sceneDict[6] = Scene(6, trait)
 
 trait = (1.0, -1/4.0, 1.0, 1)
 sceneDict[20] = Scene(20, trait)
@@ -328,13 +330,14 @@ y = raw_input()
 if y == "y":
 	for i in sceneDict:
 		myScene = sceneDict[i]
-		T = myScene.trueT+1
-		analyzeScene(myScene)
-		for x in starter:
-			path = extractPath(myScene, x)
-			myScene.pathDict[x] = path
+		if myScene.alpha <1:
+			T = myScene.trueT+1
+			analyzeScene(myScene)
+			for x in starter:
+				path = extractPath(myScene, x)
+				myScene.pathDict[x] = path
 	
-		plotPath(myScene)
+			plotPath(myScene)
 
 
 print "compare revOne and revTwo?"
@@ -342,15 +345,16 @@ y = raw_input()
 if y =="y":
 	for i in sceneDict:
 		myScene = sceneDict[i]
-		T = 1	
-		R = [rate/100.0 for rate in range(1, 101)]
-		Y = [[compareOneTwo(r, myScene) for r in R]]
+		if myScene.alpha == 1.0:
+			T = 1	
+			R = [rate/100.0 for rate in range(1, 101)]
+			Y = [[compareOneTwo(r, myScene) for r in R]]
 		
-		if i ==8:
-			print Y
+		#if i ==8:
+		#	print Y
 
-		rStar = str(int(round(myScene.rStar, 2)*100))
-		plot(R, Y, "CompareRevOneRevTwo"+rStar+"Scene"+str(i)+"_", [0, 1.0, 0, 1.0])
+			rStar = str(int(round(myScene.rStar, 2)*100))
+			plot(R, Y, "CompareRevOneRevTwo"+rStar+"Scene"+str(i)+"_", [0, 1.0, 0, 1.0])
 	
 	#	plot(R, Y, "CompareRevOneRevTwo"+rStar+"Scene"+str(i)+"_", [0, 1.0, -0.5, 1.0])
 
