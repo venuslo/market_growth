@@ -297,16 +297,16 @@ trait = (0.5, -1/3.0, 0.9, 20)
 #sceneDict[2] = Scene(2, trait)
 
 trait = (0.5, -1/3.0, 0.85, 20)
-sceneDict[3] = Scene(3, trait)
+#sceneDict[3] = Scene(3, trait)
 
 trait = (0.5, -1/3.0, 0.95, 3)
 #sceneDict[4] = Scene(4, trait)
 
-trait = (0.5, -1/3.0, 0.95, 2)
-#sceneDict[5] = Scene(5, trait)
+trait = (0.5, -1/2.0, 0.95, 5)
+sceneDict[5] = Scene(5, trait)
 
 trait = (0.5, -1/3.0, 0.95, 1)
-sceneDict[6] = Scene(6, trait)
+#sceneDict[6] = Scene(6, trait)
 
 trait = (1.0, -1/4.0, 1.0, 1)
 sceneDict[20] = Scene(20, trait)
